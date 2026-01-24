@@ -4,6 +4,7 @@ import chess.piececalculators.QueenMovesCalculator;
 import chess.piececalculators.RookMovesCalculator;
 import chess.piececalculators.KnightMovesCalculator;
 import chess.piececalculators.KingMovesCalculator;
+import chess.piececalculators.PawnMovesCalculator;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,6 +74,9 @@ public class ChessPiece {
         }
         else if (piece.getPieceType() == PieceType.KING) {
             return new KingMovesCalculator().calculate_moves(board, myPosition);
+        }
+        else if (piece.getPieceType() == PieceType.PAWN) {
+            return new PawnMovesCalculator().calculate_moves(board, myPosition);
         }
         return List.of();
     }
