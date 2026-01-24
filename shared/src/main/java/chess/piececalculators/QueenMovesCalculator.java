@@ -9,14 +9,14 @@ import chess.ChessGame;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMovesCalculator implements PieceMovesCalculator {
+public class QueenMovesCalculator implements PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> calculate_moves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team_color = board.getPiece(position).getTeamColor();
 
-        int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}, {-1, 0}, {1, 0}};
 
         for (int[] direction : directions) {
             int x = position.getRow();
