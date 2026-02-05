@@ -5,7 +5,6 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import chess.ChessPiece;
 import chess.ChessGame;
-import chess.piececalculators.PieceMovesCalculator;
 
 import java.util.ArrayList;
 import java.util.Collection;
