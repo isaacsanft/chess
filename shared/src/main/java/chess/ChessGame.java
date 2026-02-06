@@ -51,12 +51,22 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
         Collection<ChessMove> raw_moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> valid_moves = new ArrayList<>();
         for (ChessMove move : raw_moves) {
             ChessPiece target_piece = board.getPiece(move.getEndPosition());
-
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getStartPosition(), null);
+            if (!isInCheck(piece.getTeamColor())) {
+                valid_moves.add(move);
+            }
+            board.addPiece(move.getEndPosition(), target_piece);
+            board.addPiece(move.getStartPosition(), piece);
         }
+        return valid_moves;
     }
 
     /**
