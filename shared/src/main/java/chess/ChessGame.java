@@ -109,7 +109,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
+    public ChessPosition KingPosition(TeamColor teamColor) {
         ChessPosition king_position = null;
         for(int row = 1; row < 9; row++) {
             for(int col = 1; col < 9; col++) {
@@ -123,6 +123,12 @@ public class ChessGame {
                 }
             }
         }
+        return king_position;
+    }
+
+
+    public boolean isInCheck(TeamColor teamColor) {
+        ChessPosition king_position = KingPosition(teamColor);
         for(int row = 1; row < 9; row++) {
             for(int col = 1; col < 9; col++) {
                 ChessPosition target_position = new ChessPosition(row, col);
