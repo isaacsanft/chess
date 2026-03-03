@@ -43,7 +43,7 @@ public class GameServiceTests {
 
         String token = registerResult.authToken();
         CreateRequest createRequest = new CreateRequest("Test Game", token);
-        CreateResult createResult = game.create(createRequest);
+        CreateResult createResult = game.create(token, createRequest);
 
         int gameID = createResult.gameID();
         assertTrue(gameID >= 1);
@@ -58,7 +58,7 @@ public class GameServiceTests {
         String token = "incorrect";
         CreateRequest createRequest = new CreateRequest("Test Game", token);
         assertThrows(DataAccessException.class, () -> {
-            game.create(createRequest);
+            game.create(token, createRequest);
         });
     }
 
@@ -69,11 +69,11 @@ public class GameServiceTests {
 
         String token = registerResult.authToken();
         CreateRequest createRequest = new CreateRequest("Test Game", token);
-        CreateResult createResult = game.create(createRequest);
+        CreateResult createResult = game.create(token, createRequest);
         int gameID = createResult.gameID();
 
         JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.BLACK, gameID, token);
-        JoinResult joinResult = game.join(joinRequest);
+        JoinResult joinResult = game.join(token, joinRequest);
 
         Game updatedGame = gameDAO.getGame(gameID);
         assertNotNull(joinResult);
@@ -87,12 +87,12 @@ public class GameServiceTests {
 
         String token = registerResult.authToken();
         CreateRequest createRequest = new CreateRequest("Test Game", token);
-        CreateResult createResult = game.create(createRequest);
+        CreateResult createResult = game.create(token, createRequest);
         int gameID = 0;
 
         JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.BLACK, gameID, token);
         assertThrows(DataAccessException.class, () -> {
-            game.join(joinRequest);
+            game.join(token, joinRequest);
         });
     }
 
@@ -103,10 +103,10 @@ public class GameServiceTests {
 
         String token = registerResult.authToken();
         CreateRequest createRequest = new CreateRequest("Test Game", token);
-        CreateResult createResult = game.create(createRequest);
+        CreateResult createResult = game.create(token, createRequest);
 
         ListRequest listRequest = new ListRequest(token);
-        ListResult listResult = game.list(listRequest);
+        ListResult listResult = game.list(token, listRequest);
 
         Collection<Game> games = listResult.games();
         assertTrue(!games.isEmpty());
@@ -120,11 +120,11 @@ public class GameServiceTests {
         String realToken = registerResult.authToken();
         String fakeToken = "incorrect";
         CreateRequest createRequest = new CreateRequest("Test Game", realToken);
-        CreateResult createResult = game.create(createRequest);
+        CreateResult createResult = game.create(realToken, createRequest);
 
         ListRequest listRequest = new ListRequest(fakeToken);
         assertThrows(DataAccessException.class, () -> {
-            game.list(listRequest);
+            game.list(fakeToken, listRequest);
         });
     }
 }
