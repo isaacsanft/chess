@@ -1,4 +1,4 @@
-package servicetests;
+package service;
 
 import dataaccess.*;
 import model.AuthToken;
@@ -9,8 +9,6 @@ import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
-import service.ClearService;
-import service.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

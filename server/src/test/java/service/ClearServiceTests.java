@@ -1,11 +1,10 @@
-package servicetests;
+package service;
 
 import dataaccess.*;
 import model.AuthToken;
 import model.Game;
 import model.User;
 import org.junit.jupiter.api.Test;
-import service.ClearService;
 
 import java.util.Collection;
 

@@ -1,17 +1,12 @@
-package servicetests;
+package service;
 
 import chess.ChessGame;
 import dataaccess.*;
-import model.AuthToken;
 import model.Game;
-import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
-import service.ClearService;
-import service.GameService;
-import service.UserService;
 
 import java.util.Collection;
 
