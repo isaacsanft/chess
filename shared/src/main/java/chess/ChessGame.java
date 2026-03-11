@@ -112,7 +112,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public ChessPosition KingPosition(TeamColor teamColor) {
+    public ChessPosition kingPosition(TeamColor teamColor) {
         ChessPosition kingPosition = null;
         for(int row = 1; row < 9; row++) {
             for(int col = 1; col < 9; col++) {
@@ -131,7 +131,7 @@ public class ChessGame {
 
 
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition = KingPosition(teamColor);
+        ChessPosition kingPosition = kingPosition(teamColor);
         for(int row = 1; row < 9; row++) {
             for(int col = 1; col < 9; col++) {
                 ChessPosition targetPosition = new ChessPosition(row, col);
@@ -159,7 +159,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessPosition kingPosition = KingPosition(teamColor);
+        ChessPosition kingPosition = kingPosition(teamColor);
         if (!isInCheck(teamColor)) {
             return false;
         }
@@ -193,7 +193,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        ChessPosition kingPosition = KingPosition(teamColor);
+        ChessPosition kingPosition = kingPosition(teamColor);
         if (isInCheck(teamColor)) {
             return false;
         }

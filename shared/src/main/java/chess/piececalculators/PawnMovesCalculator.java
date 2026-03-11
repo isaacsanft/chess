@@ -29,9 +29,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.ROOK));
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.KNIGHT));
-                } else {
-                    moves.add(new ChessMove(position, target, null));
-                }
+                } else { moves.add(new ChessMove(position, target, null)); }
             }
             if (position.getRow() == 7 ) {
                 x -= 1;
@@ -47,9 +45,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             for (int[] direction : directions) {
                 x = position.getRow() + direction[0];
                 y = position.getColumn() + direction[1];
-                if (y < 1 || y > 8) {
-                    continue;
-                }
+                if (y < 1 || y > 8) { continue; }
                 target = new ChessPosition(x, y);
                 targetPiece = board.getPiece(target);
                 if (x > 1) {
@@ -77,9 +73,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.ROOK));
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.BISHOP));
                     moves.add(new ChessMove(position, target, ChessPiece.PieceType.KNIGHT));
-                } else {
-                    moves.add(new ChessMove(position, target, null));
-                }
+                } else { moves.add(new ChessMove(position, target, null)); }
             }
             if (position.getRow() == 2 ) {
                 x += 1;
@@ -95,9 +89,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             for (int[] direction : directions) {
                 x = position.getRow() + direction[0];
                 y = position.getColumn() + direction[1];
-                if (y < 1 || y > 8) {
-                    continue;
-                }
+                if (y < 1 || y > 8) { continue; }
                 target = new ChessPosition(x, y);
                 targetPiece = board.getPiece(target);
                 if (x < 8) {
