@@ -6,5 +6,5 @@ import chess.ChessPosition;
 import java.util.Collection;
 
 public interface PieceMovesCalculator {
-    Collection<ChessMove> calculate_moves(ChessBoard board, ChessPosition position);
+    Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position);
 }

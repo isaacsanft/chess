@@ -44,23 +44,23 @@ public class ChessBoard {
     public void resetBoard() {
         this.squares = new ChessPiece[8][8];
         for (int i = 1; i < 9; i ++) {
-            ChessPosition pos_black = new ChessPosition(7, i);
-            ChessPosition pos_white = new ChessPosition(2, i);
-            ChessPiece piece_black = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-            ChessPiece piece_white = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-            addPiece(pos_black, piece_black);
-            addPiece(pos_white, piece_white);
+            ChessPosition posBlack = new ChessPosition(7, i);
+            ChessPosition posWhite = new ChessPosition(2, i);
+            ChessPiece pieceBlack = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            ChessPiece pieceWhite = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            addPiece(posBlack, pieceBlack);
+            addPiece(posWhite, pieceWhite);
         }
-        ChessPiece.PieceType[] row_order = {
+        ChessPiece.PieceType[] rowOrder = {
                 ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN,
                 ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK
         };
         for (int i = 1; i <= 8; i++) {
-            ChessPosition pos_white = new ChessPosition(1, i);
-            ChessPosition pos_black = new ChessPosition(8, i);
-            ChessPiece.PieceType type = row_order[i - 1];
-            addPiece(pos_white, new ChessPiece(ChessGame.TeamColor.WHITE, type));
-            addPiece(pos_black, new ChessPiece(ChessGame.TeamColor.BLACK, type));
+            ChessPosition posWhite = new ChessPosition(1, i);
+            ChessPosition posBlack = new ChessPosition(8, i);
+            ChessPiece.PieceType type = rowOrder[i - 1];
+            addPiece(posWhite, new ChessPiece(ChessGame.TeamColor.WHITE, type));
+            addPiece(posBlack, new ChessPiece(ChessGame.TeamColor.BLACK, type));
         }
     }
 

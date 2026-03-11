@@ -12,9 +12,9 @@ import java.util.Collection;
 public class RookMovesCalculator implements PieceMovesCalculator {
 
     @Override
-    public Collection<ChessMove> calculate_moves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new ArrayList<>();
-        ChessGame.TeamColor team_color = board.getPiece(position).getTeamColor();
+        ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
 
         int[][] directions = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
 
@@ -28,11 +28,11 @@ public class RookMovesCalculator implements PieceMovesCalculator {
                     break;
                 }
                 ChessPosition target = new ChessPosition(x, y);
-                ChessPiece target_piece = board.getPiece(target);
-                if (target_piece == null) {
+                ChessPiece targetPiece = board.getPiece(target);
+                if (targetPiece == null) {
                     moves.add(new ChessMove(position, target, null));
                 }
-                else if (target_piece.getTeamColor() == team_color) {
+                else if (targetPiece.getTeamColor() == teamColor) {
                     break;
                 }
                 else {

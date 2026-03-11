@@ -62,22 +62,22 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         if (piece.getPieceType() == PieceType.BISHOP) {
-            return new BishopMovesCalculator().calculate_moves(board, myPosition);
+            return new BishopMovesCalculator().calculateMoves(board, myPosition);
         }
         else if (piece.getPieceType() == PieceType.QUEEN) {
-            return new QueenMovesCalculator().calculate_moves(board, myPosition);
+            return new QueenMovesCalculator().calculateMoves(board, myPosition);
         }
         else if (piece.getPieceType() == PieceType.ROOK) {
-            return new RookMovesCalculator().calculate_moves(board, myPosition);
+            return new RookMovesCalculator().calculateMoves(board, myPosition);
         }
         else if (piece.getPieceType() == PieceType.KNIGHT) {
-            return new KnightMovesCalculator().calculate_moves(board, myPosition);
+            return new KnightMovesCalculator().calculateMoves(board, myPosition);
         }
         else if (piece.getPieceType() == PieceType.KING) {
-            return new KingMovesCalculator().calculate_moves(board, myPosition);
+            return new KingMovesCalculator().calculateMoves(board, myPosition);
         }
         else if (piece.getPieceType() == PieceType.PAWN) {
-            return new PawnMovesCalculator().calculate_moves(board, myPosition);
+            return new PawnMovesCalculator().calculateMoves(board, myPosition);
         }
         return List.of();
     }
