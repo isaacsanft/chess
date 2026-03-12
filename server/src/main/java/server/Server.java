@@ -8,11 +8,20 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 
+import javax.xml.crypto.Data;
+
 public class Server {
 
     private final Javalin javalin;
 
     public Server() {
+
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Unable to create database.");
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         UserDAO userDAO = new MemoryUserDAO();
