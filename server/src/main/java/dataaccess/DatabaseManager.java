@@ -57,13 +57,13 @@ public class DatabaseManager {
               `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256),
               `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`)
+              PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
     public static void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
+        createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {

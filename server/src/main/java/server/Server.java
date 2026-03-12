@@ -17,16 +17,16 @@ public class Server {
     public Server() {
 
         try {
-            DatabaseManager.createDatabase();
+            DatabaseManager.configureDatabase();
         } catch (DataAccessException e) {
             throw new RuntimeException("Unable to create database.");
         }
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+        UserDAO userDAO = new MySQLUserDAO();
+        AuthDAO authDAO = new MySQLAuthDAO();
+        GameDAO gameDAO = new MySQLGameDAO();
 
         UserService user = new UserService(userDAO, authDAO);
         GameService game = new GameService(userDAO, authDAO, gameDAO);
