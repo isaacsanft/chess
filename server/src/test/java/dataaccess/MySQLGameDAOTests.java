@@ -85,4 +85,12 @@ public class MySQLGameDAOTests {
         assertTrue(games.isEmpty());
     }
 
+    @Test
+    public void clearPositive() throws DataAccessException {
+        gameDAO.createGame("Game 1");
+        gameDAO.createGame("Game 2");
+        gameDAO.clear();
+        Collection<Game> games = gameDAO.listGames();
+        assertTrue(games.isEmpty());
+    }
 }

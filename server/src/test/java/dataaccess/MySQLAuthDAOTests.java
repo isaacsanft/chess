@@ -63,4 +63,13 @@ public class MySQLAuthDAOTests {
     public void deleteAuthNegative() throws DataAccessException {
         assertDoesNotThrow(() -> authDAO.deleteAuth("fake token"));
     }
+
+    @Test
+    public void clearPositive() throws DataAccessException {
+        authDAO.createAuth(new AuthToken("token1", "user1"));
+        authDAO.createAuth(new AuthToken("token2", "user2"));
+        authDAO.clear();
+        assertNull(authDAO.getAuth("token1"));
+        assertNull(authDAO.getAuth("token2"));
+    }
 }
