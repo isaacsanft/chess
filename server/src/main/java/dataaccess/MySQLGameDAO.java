@@ -14,6 +14,9 @@ import java.util.List;
 public class MySQLGameDAO implements GameDAO {
     @Override
     public int createGame(String gameName) throws DataAccessException {
+        if (gameName == null) {
+            throw new DataAccessException("gameName cannot be null");
+        }
         ChessGame chessGame = new ChessGame();
         String json = new Gson().toJson(chessGame);
         var query = "INSERT INTO game (gameName, json) VALUES (?, ?)";
