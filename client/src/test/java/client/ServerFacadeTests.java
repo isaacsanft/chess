@@ -2,9 +2,11 @@ package client;
 
 import model.AuthToken;
 import org.junit.jupiter.api.*;
+import request.CreateRequest;
 import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
+import result.CreateResult;
 import result.LoginResult;
 import result.RegisterResult;
 import server.Server;
@@ -98,6 +100,23 @@ public class ServerFacadeTests {
                 facade.logout(logoutRequest));
     }
 
+    @Test
+    public void createPositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = registerResult.authToken();
+        CreateRequest createRequest = new CreateRequest("test", authToken);
+        CreateResult createResult = facade.create(createRequest);
+        assertNotNull(createResult.gameID());
+    }
+
+    @Test
+    public void createNegative() throws ResponseException {
+        String authToken = "fake";
+        CreateRequest createRequest = new CreateRequest("test", authToken);
+        assertThrows(ResponseException.class, () ->
+                facade.create(createRequest));
+    }
 
 
 }
