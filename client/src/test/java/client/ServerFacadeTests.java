@@ -1,7 +1,9 @@
 package client;
 
+import model.AuthToken;
 import org.junit.jupiter.api.*;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
@@ -75,5 +77,27 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () ->
                 facade.login(loginRequest));
     }
+
+    @Test
+    public void logoutPositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = registerResult.authToken();
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
+        assertDoesNotThrow(() ->
+                facade.logout(logoutRequest));
+    }
+
+    @Test
+    public void logoutNegative() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = "fake";
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
+        assertThrows(ResponseException.class, () ->
+                facade.logout(logoutRequest));
+    }
+
+
 
 }
