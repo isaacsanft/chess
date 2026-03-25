@@ -2,11 +2,9 @@ package client;
 
 import model.AuthToken;
 import org.junit.jupiter.api.*;
-import request.CreateRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.CreateResult;
+import result.ListResult;
 import result.LoginResult;
 import result.RegisterResult;
 import server.Server;
@@ -118,5 +116,24 @@ public class ServerFacadeTests {
                 facade.create(createRequest));
     }
 
+    @Test
+    public void listPositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = registerResult.authToken();
+        CreateRequest createRequest = new CreateRequest("test", authToken);
+        CreateResult createResult = facade.create(createRequest);
+        ListRequest listRequest = new ListRequest(authToken);
+        ListResult listResult = facade.list(listRequest);
+        assertEquals(1, listResult.games().size());
+    }
+
+    @Test
+    public void listNegative() throws ResponseException {
+        String authToken = "fake";
+        ListRequest listRequest = new ListRequest(authToken);
+        assertThrows(ResponseException.class, () ->
+                facade.list(listRequest));
+    }
 
 }
