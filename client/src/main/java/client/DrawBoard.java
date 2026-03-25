@@ -26,6 +26,7 @@ public class DrawBoard {
         out.print("Now Black:");
         out.println();
         drawBoard(out, board, ChessGame.TeamColor.BLACK);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
 
     public static void drawBoard(PrintStream out, ChessBoard board, ChessGame.TeamColor color) {
@@ -36,6 +37,7 @@ public class DrawBoard {
         }
         drawHeaders(out, color);
         out.print(RESET_BG_COLOR);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
 
     private static void drawHeaders(PrintStream out, ChessGame.TeamColor color) {

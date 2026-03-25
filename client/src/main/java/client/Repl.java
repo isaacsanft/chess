@@ -91,7 +91,7 @@ public class Repl {
                 RegisterResult result = server.register(request);
                 this.authToken = result.authToken();
                 this.state = State.SIGNEDIN;
-                return "Registration Successful" + "\n" +"Logged in as" + username + "\n";
+                return "Registration Successful" + "\n" +"Logged in as " + username + "\n";
             } catch (Exception e) {
                 return "Invalid. Please try again.";
             }
