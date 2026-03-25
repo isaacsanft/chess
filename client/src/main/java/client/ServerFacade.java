@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import request.*;
+import result.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -71,5 +73,33 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        return makeRequest("POST", "/user", request, RegisterResult.class, null);
+    }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        return makeRequest("POST", "/session", request, LoginResult.class, null);
+    }
+
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        return makeRequest("DELETE", "/session", request, LogoutResult.class, request.authToken());
+    }
+
+    public CreateResult create(CreateRequest request) throws ResponseException {
+        return makeRequest("POST", "/game", request, CreateResult.class, request.authToken());
+    }
+
+    public ListResult list(ListRequest request) throws ResponseException {
+        return makeRequest("GET", "/game", request, ListResult.class, request.authToken());
+    }
+
+    public JoinResult join(JoinRequest request) throws ResponseException {
+        return makeRequest("PUT", "/game", request, JoinResult.class, request.authToken());
+    }
+
+    public ClearResult clear() throws ResponseException {
+        return makeRequest("DELETE", "/db", null, ClearResult.class, null);
     }
 }
