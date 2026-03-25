@@ -1,10 +1,8 @@
 package client;
-
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
-
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -15,11 +13,9 @@ public class DrawBoard {
 
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
-    private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
 
     // Padded characters.
-    private static final String EMPTY = " \u2003 ";
+    private static final String EMPTY = "   ";
     private static Random rand = new Random();
 
     public static void main(String[] args) {
@@ -103,7 +99,7 @@ public class DrawBoard {
                 out.print(" " + icon + " ");
             }
             else {
-                out.print(SET_TEXT_COLOR_BLUE);
+                out.print(SET_TEXT_COLOR_RED);
                 out.print(" " + icon + " ");
             }
         }
