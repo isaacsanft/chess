@@ -1,12 +1,10 @@
 package client;
 
+import chess.ChessGame;
 import model.AuthToken;
 import org.junit.jupiter.api.*;
 import request.*;
-import result.CreateResult;
-import result.ListResult;
-import result.LoginResult;
-import result.RegisterResult;
+import result.*;
 import server.Server;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,6 +104,31 @@ public class ServerFacadeTests {
         CreateRequest createRequest = new CreateRequest("test", authToken);
         CreateResult createResult = facade.create(createRequest);
         assertNotNull(createResult.gameID());
+    }
+
+    @Test
+    public void joinPositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = registerResult.authToken();
+        CreateRequest createRequest = new CreateRequest("test", authToken);
+        CreateResult createResult = facade.create(createRequest);
+        JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, createResult.gameID(), authToken);
+        assertDoesNotThrow(() ->
+                facade.join(joinRequest));
+    }
+    @Test
+    public void joinNegative() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("Isaac", "password", "isaac@email.com");
+        RegisterResult registerResult = facade.register(registerRequest);
+        String authToken = registerResult.authToken();
+        CreateRequest createRequest = new CreateRequest("test", authToken);
+        CreateResult createResult = facade.create(createRequest);
+        JoinRequest joinRequest1 = new JoinRequest(ChessGame.TeamColor.WHITE, createResult.gameID(), authToken);
+        JoinResult joinResult = facade.join(joinRequest1);
+        JoinRequest joinRequest2 = new JoinRequest(ChessGame.TeamColor.WHITE, createResult.gameID(), authToken);
+        assertThrows(ResponseException.class, () ->
+                facade.join(joinRequest2));
     }
 
     @Test
