@@ -93,7 +93,7 @@ public class Repl {
                 this.state = State.SIGNEDIN;
                 return "Registration Successful" + "\n" +"Logged in as " + username + "\n";
             } catch (Exception e) {
-                return "Invalid. Please try again.";
+                return "User already exists with username.";
             }
         }
         else {
@@ -110,9 +110,9 @@ public class Repl {
                 LoginResult result = server.login(request);
                 this.authToken = result.authToken();
                 this.state = State.SIGNEDIN;
-                return "Logged in as" + username + "\n";
+                return "Logged in as " + username + "\n";
             } catch (Exception e) {
-                return "Invalid. Please try again.";
+                return "Invalid login credentials.";
             }
         }
         else {
@@ -141,7 +141,7 @@ public class Repl {
                 gameIDs.add(gameID);
                 return "Successfully Created Game: " + gameName + "\n";
             } catch (Exception e) {
-                return "Invalid. Please try again.";
+                return "Game with same name already exists.";
             }
         }
         else {
@@ -170,8 +170,10 @@ public class Repl {
                     teamColor = ChessGame.TeamColor.BLACK;
                     boardColor = ChessGame.TeamColor.BLACK;
                 }
-                JoinRequest request = new JoinRequest(teamColor, gameID, this.authToken);
-                JoinResult result = server.join(request);
+                if (teamColor != null) {
+                    JoinRequest request = new JoinRequest(teamColor, gameID, this.authToken);
+                    JoinResult result = server.join(request);
+                }
                 ChessBoard board = new ChessBoard();
                 board.resetBoard();
                 System.out.println(); // Add some breathing room
@@ -179,7 +181,7 @@ public class Repl {
                 System.out.println();
                 return "Successfully Joined Game" + "\n";
             } catch (Exception e) {
-                return "Invalid. Please try again.";
+                return "Player slot is not open.";
             }
         }
         else {
@@ -198,7 +200,8 @@ public class Repl {
             for (Game game : games) {
                 gameIDs.add(game.gameID());
                 String gameName = game.gameName();
-                stringBuilder.append(it).append(". ").append(gameName).append("\n");
+                stringBuilder.append(it).append(". ").append(gameName);
+                stringBuilder.append("  Players: White: ").append(game.whiteUsername()).append("  Black: ").append(game.blackUsername());
                 it++;
             }
             return stringBuilder.toString();
