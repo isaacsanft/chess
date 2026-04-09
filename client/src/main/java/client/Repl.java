@@ -1,7 +1,6 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
+import chess.*;
 import client.websocket.ServerMessageObserver;
 import client.websocket.WebSocketFacade;
 import model.Game;
@@ -22,6 +21,7 @@ public class Repl implements ServerMessageObserver {
     private List<Integer> gameIDs = new ArrayList<>();
     private WebSocketFacade webSocketFacade;
     private ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
+    private Integer gameID;
 
     public Repl(ServerFacade server, String serverUrl) throws ResponseException {
         this.server = server;
@@ -71,6 +71,7 @@ public class Repl implements ServerMessageObserver {
                 case "list" -> list();
                 case "join" -> join(params);
                 case "quit" -> "quit";
+                case "m", "move", "make" -> move(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -199,6 +200,8 @@ public class Repl implements ServerMessageObserver {
                     JoinResult result = server.join(request);
                 }
                 webSocketFacade.connect(authToken, gameID);
+                this.state = State.INGAME;
+                this.gameID = gameID;
                 return "Successfully Joined Game" + "\n";
             } catch (Exception e) {
                 return "Player slot is not open.";
@@ -228,6 +231,53 @@ public class Repl implements ServerMessageObserver {
         } catch (ResponseException e) {
             return "Invalid. Please try again.";
         }
+    }
+
+    public String move(String[] params) {
+        if (params.length != 2 && params.length != 3) {
+            return "Error: Please enter <start> <end> <optional promotion> (e.g. move e2 e4 r)";
+        }
+        try {
+            String start = params[0];
+            String end = params[1];
+            ChessPiece.PieceType promotionType = null;
+            if (params.length == 3) {
+                String promotion = params[2];
+                promotionType = findPromotion(promotion);
+            }
+            ChessPosition startPosition = findPosition(start);
+            ChessPosition endPosition = findPosition(end);
+            ChessMove move = new ChessMove(startPosition, endPosition, promotionType);
+            webSocketFacade.makeMove(authToken, gameID, move);
+            return "";
+        } catch (Exception e) {
+            return "Error: Please enter <start> <end> <optional promotion> (e.g. move e2 e4 r)";
+        }
+    }
+
+    public ChessPosition findPosition(String position) {
+        String letter = String.valueOf(position.charAt(0));
+        int col = 0;
+        int row = position.charAt(1);
+        if (letter.equalsIgnoreCase("a")) { col = 1;}
+        else if (letter.equalsIgnoreCase("b")) { col = 2;}
+        else if (letter.equalsIgnoreCase("c")) { col = 3;}
+        else if (letter.equalsIgnoreCase("d")) { col = 4;}
+        else if (letter.equalsIgnoreCase("e")) { col = 5;}
+        else if (letter.equalsIgnoreCase("f")) { col = 6;}
+        else if (letter.equalsIgnoreCase("g")) { col = 7;}
+        else if (letter.equalsIgnoreCase("h")) { col = 8;}
+        ChessPosition chessPosition = new ChessPosition(row, col);
+        return chessPosition;
+    }
+
+    public ChessPiece.PieceType findPromotion(String letter) {
+        ChessPiece.PieceType pieceType = null;
+        if (letter.equalsIgnoreCase("q")) { pieceType = ChessPiece.PieceType.QUEEN;}
+        else if (letter.equalsIgnoreCase("b")) { pieceType = ChessPiece.PieceType.BISHOP;}
+        else if (letter.equalsIgnoreCase("r")) { pieceType = ChessPiece.PieceType.ROOK;}
+        else if (letter.equalsIgnoreCase("k")) { pieceType = ChessPiece.PieceType.KNIGHT;}
+        return pieceType;
     }
 
     @Override
