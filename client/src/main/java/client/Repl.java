@@ -86,13 +86,22 @@ public class Repl implements ServerMessageObserver {
             stringBuilder.append("quit - playing chess\n");
             stringBuilder.append("help - with possible commands\n");
         }
-        else {
+        else if (state == State.SIGNEDIN){
             stringBuilder.append("create <NAME> - a game\n");
             stringBuilder.append("list - games\n");
             stringBuilder.append("join <ID> [WHITE|BLACK|OBSERVE] - a game\n");
             stringBuilder.append("logout - when you are done\n");
             stringBuilder.append("quit - playing chess\n");
             stringBuilder.append("help - with possible commands\n");
+        }
+        else {
+            stringBuilder.append("Options:\n");
+            stringBuilder.append("Highlight legal moves: \"hl\", \"highlight\" <position> (e.g. f5)\n");
+            stringBuilder.append("Make a move: \"m\", \"move\", \"make\" <source> <destination> <optional promotion> (e.g. f5 e4 q)\n");
+            stringBuilder.append("Redraw Chess Board: \"r\", \"redraw\"\n");
+            stringBuilder.append("Change color scheme: \"c\", \"colors\" <color number>\n");
+            stringBuilder.append("Resign from game: \"res\", \"resign\"\n");
+            stringBuilder.append("Leave game: \"leave\"\n");
         }
         return stringBuilder.toString();
     }
