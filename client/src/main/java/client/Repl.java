@@ -22,6 +22,7 @@ public class Repl implements ServerMessageObserver {
     private WebSocketFacade webSocketFacade;
     private ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
     private Integer gameID;
+    private ChessGame chessGame = null;
 
     public Repl(ServerFacade server, String serverUrl) throws ResponseException {
         this.server = server;
@@ -72,6 +73,8 @@ public class Repl implements ServerMessageObserver {
                 case "join" -> join(params);
                 case "quit" -> "quit";
                 case "m", "move", "make" -> move(params);
+                case "leave" -> leave();
+                case "res", "resign" -> resign();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -143,6 +146,18 @@ public class Repl implements ServerMessageObserver {
         }
         else {
             return "Please follow format: login <USERNAME> <PASSWORD>";
+        }
+    }
+
+    private String redraw() {
+        if (chessGame != null) {
+            System.out.println();
+            DrawBoard.drawBoard(System.out, chessGame.getBoard(), boardColor);
+            System.out.println();
+            return "";
+        }
+        else {
+            return "Error: Unable to redraw board.";
         }
     }
 
@@ -255,6 +270,18 @@ public class Repl implements ServerMessageObserver {
         }
     }
 
+    public String leave() throws ResponseException {
+        webSocketFacade.leave(authToken, gameID);
+        this.state = State.SIGNEDIN;
+        this.gameID = null;
+        return "Left the game.\n";
+    }
+
+    public String resign() throws ResponseException {
+        webSocketFacade.resign(this.authToken, this.gameID);
+        return "";
+    }
+
     public ChessPosition findPosition(String position) {
         String letter = String.valueOf(position.charAt(0));
         int col = 0;
@@ -286,6 +313,7 @@ public class Repl implements ServerMessageObserver {
             case LOAD_GAME:
                 LoadGameMessage loadGameMessage = (LoadGameMessage) message;
                 ChessGame game = loadGameMessage.getGame();
+                this.chessGame = game;
                 ChessBoard board = game.getBoard();
                 System.out.println();
                 DrawBoard.drawBoard(System.out, board, boardColor);

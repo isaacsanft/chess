@@ -1,10 +1,9 @@
 package client;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Random;
 
 import static ui.EscapeSequences.*;
@@ -33,7 +32,18 @@ public class DrawBoard {
         out.print(ERASE_SCREEN);
         drawHeaders(out, color);
         for (int i = 0; i < 8; i++) {
-            drawRow(out, i, board, color);
+            drawRow(out, i, board, color, null);
+        }
+        drawHeaders(out, color);
+        out.print(RESET_BG_COLOR);
+        out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    public static void drawHighlightedBoard(PrintStream out, ChessBoard board, ChessGame.TeamColor color, Collection<ChessMove> validMoves) {
+        out.print(ERASE_SCREEN);
+        drawHeaders(out, color);
+        for (int i = 0; i < 8; i++) {
+            drawRow(out, i, board, color, validMoves);
         }
         drawHeaders(out, color);
         out.print(RESET_BG_COLOR);
@@ -59,7 +69,22 @@ public class DrawBoard {
         out.println();
     }
 
-    private static void drawRow(PrintStream out, int row, ChessBoard board, ChessGame.TeamColor color) {
+    private static String setHighlightColor(ChessPosition position, Collection<ChessMove> validMoves) {
+        for (ChessMove move : validMoves) {
+            if (move.getEndPosition().getRow() == position.getRow()
+                    && move.getEndPosition().getColumn() == position.getColumn()) {
+                if ((position.getRow() + position.getColumn()) % 2 == 0) {
+                    return SET_BG_COLOR_GREEN;
+                }
+                else {
+                    return SET_BG_COLOR_DARK_GREEN;
+                }
+            }
+        }
+        return "";
+    }
+
+    private static void drawRow(PrintStream out, int row, ChessBoard board, ChessGame.TeamColor color, Collection<ChessMove> validMoves) {
         int diplayRow = getDisplayRow(row, color);
 
         printBorderSquare(out, diplayRow);
@@ -73,6 +98,9 @@ public class DrawBoard {
                 bgColor = SET_BG_COLOR_LIGHT_GREY;
             }
             ChessPosition position = new ChessPosition(diplayRow, displayColumn);
+            if (validMoves != null) {
+                bgColor = setHighlightColor(position, validMoves);
+            }
             ChessPiece piece = board.getPiece(position);
             printSquare(out, piece, bgColor);
         }
