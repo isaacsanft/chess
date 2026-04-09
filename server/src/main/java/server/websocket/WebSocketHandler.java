@@ -53,6 +53,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 break;
 
             case LEAVE:
+                leave(command.getAuthToken(), command.getGameID(), ctx.session);
+                break;
+
+            case RESIGN:
+                resign(command.getAuthToken(), command.getGameID(), ctx.session);
+                break;
         }
     }
 
@@ -119,7 +125,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new DataAccessException("Error: It's not your turn.");
             }
             if (chessGame.isInCheckmate(turnColor) || chessGame.isInStalemate(turnColor)) {
-                throw new DataAccessException("Error: The game is over.");
+                throw new DataAccessException("Error: Game over.");
+            }
+            if (chessGame.isGameOver()) {
+                throw new DataAccessException("Error: Game over.");
             }
             ChessPosition startPosition = move.getStartPosition();
             Collection<ChessMove> validMoves = chessGame.validMoves(startPosition);
@@ -168,7 +177,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.broadcast(gameID, username, notificationMessage);
 
         } catch (DataAccessException | IOException e) {
-            throw new RuntimeException(e);
+            sendErrorMessage(session, "Error: " + e.getMessage());
         }
     }
 
@@ -182,16 +191,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             if (!(username.equals(game.whiteUsername()) || username.equals(game.blackUsername()))) {
                 throw new DataAccessException("Error: Observing.");
             }
-            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) ||
-                    chessGame.isInStalemate(turnColor) ||
-                    chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                throw new DataAccessException("Error: Game is over.");
+            if (chessGame.isGameOver()) {
+                throw new DataAccessException("Error: Game over.");
             }
+            chessGame.setGameOver(true);
+            gameDAO.updateGame(game);
             String message = username + "resigned. Game over.";
             NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.broadcast(gameID, null, notificationMessage);
         } catch (DataAccessException | IOException e) {
-            throw new RuntimeException(e);
+            sendErrorMessage(session, "Error: " + e.getMessage());
         }
     }
 
@@ -208,6 +217,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         int r2 = end.getRow();
         int c2 = end.getColumn();
         return username + " moved from [" + r1 + ", " + c1 +"] to [" + r2 + ", " + c2 + "]";
+    }
+
+    private void sendErrorMessage(Session session, String message) {
+        try {
+            ErrorMessage errorMessage = new ErrorMessage(message);
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+        } catch (IOException e) {
+            System.out.println("Unable to create error message.");
+        }
     }
 
 }
