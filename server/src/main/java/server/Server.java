@@ -4,6 +4,7 @@ import dataaccess.*;
 import handlers.*;
 import io.javalin.*;
 import result.ListResult;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -50,6 +51,10 @@ public class Server {
     }
 
     public int run(int desiredPort) {
+        WebSocketHandler webSocketHandler = new WebSocketHandler();
+        javalin.ws("/ws", ws -> {ws.onConnect(webSocketHandler);
+        ws.onMessage(webSocketHandler);
+        ws.onClose(webSocketHandler);});
         javalin.start(desiredPort);
         return javalin.port();
     }
