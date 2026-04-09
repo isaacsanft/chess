@@ -2,24 +2,45 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import client.websocket.ServerMessageObserver;
+import client.websocket.WebSocketFacade;
 import model.Game;
 import request.*;
 import result.*;
+import server.websocket.messages.ErrorMessage;
+import server.websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+import server.websocket.messages.LoadGameMessage;
 
 import java.util.*;
 
-public class Repl {
+public class Repl implements ServerMessageObserver {
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
     private String authToken = null;
     private List<Integer> gameIDs = new ArrayList<>();
+    private WebSocketFacade webSocketFacade;
+    private ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
 
-    public Repl(ServerFacade server, String serverUrl) {
+    public Repl(ServerFacade server, String serverUrl) throws ResponseException {
         this.server = server;
         this.serverUrl = serverUrl;
+        try {
+            this.webSocketFacade = new WebSocketFacade(serverUrl, this);
+        } catch (ResponseException e) {
+            System.out.println("Error creating connection.");
+        }
     }
 
+    private void printState() {
+        if (state == State.SIGNEDOUT) {
+            System.out.print("\n[LOGGED_OUT] >>> ");
+        }
+        else {
+            System.out.print("\n[LOGGED_IN] >>> ");
+        }
+    }
 
     public void run() {
         System.out.print("Welcome to CS 240 Chess. Type Help to get started.");
@@ -27,12 +48,7 @@ public class Repl {
         String result = "";
 
         while (!result.equalsIgnoreCase("quit")) {
-            if (state == State.SIGNEDOUT) {
-                System.out.print("\n[LOGGED_OUT] >>> ");
-            }
-            else {
-                System.out.print("\n[LOGGED_IN] >>> ");
-            }
+            printState();
 
             String line = scanner.nextLine();
             result = eval(line);
@@ -162,7 +178,6 @@ public class Repl {
                 Integer gameID = gameIDs.get(index);
                 String perspective = params[1];
                 ChessGame.TeamColor teamColor = null;
-                ChessGame.TeamColor boardColor = ChessGame.TeamColor.WHITE;
                 if ("WHITE".equalsIgnoreCase(perspective)) {
                     teamColor = ChessGame.TeamColor.WHITE;
                 }
@@ -174,6 +189,7 @@ public class Repl {
                     JoinRequest request = new JoinRequest(teamColor, gameID, this.authToken);
                     JoinResult result = server.join(request);
                 }
+                webSocketFacade.connect(authToken, gameID);
                 ChessBoard board = new ChessBoard();
                 board.resetBoard();
                 System.out.println(); // Add some breathing room
@@ -207,6 +223,30 @@ public class Repl {
             return stringBuilder.toString();
         } catch (ResponseException e) {
             return "Invalid. Please try again.";
+        }
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case LOAD_GAME:
+                LoadGameMessage loadGameMessage = (LoadGameMessage) message;
+                ChessGame game = loadGameMessage.getGame();
+                ChessBoard board = game.getBoard();
+                DrawBoard.drawBoard(System.out, board, boardColor);
+                break;
+            case NOTIFICATION:
+                NotificationMessage notificationMessage = (NotificationMessage) message;
+                String notification = notificationMessage.getMessage();
+                System.out.println(notification);
+                printState();
+                break;
+            case ERROR:
+                ErrorMessage errorMessage = (ErrorMessage) message;
+                String error = errorMessage.getErrorMessage();
+                System.out.println("Error: " + error);
+                printState();
+                break;
         }
     }
 }
