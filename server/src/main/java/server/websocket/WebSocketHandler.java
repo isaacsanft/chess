@@ -51,6 +51,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 ChessMove move = makeMoveCommand.move;
                 makeMove(makeMoveCommand.getAuthToken(), makeMoveCommand.getGameID(), move, ctx.session);
                 break;
+
+            case LEAVE:
         }
     }
 
@@ -142,6 +144,54 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             } catch (IOException i) {
                 throw new RuntimeException(i);
             }
+        }
+    }
+
+    public void leave(String token, Integer gameID, Session session) {
+        try {
+            AuthToken authToken = authDAO.getAuth(token);
+            Game game = gameDAO.getGame(gameID);
+            String username = authToken.username();
+            connectionManager.remove(session, gameID);
+
+            if (username.equals(game.whiteUsername())) {
+                Game updatedGame = new Game (gameID, null, game.blackUsername(), game.gameName(), game.game());
+                gameDAO.updateGame(updatedGame);
+            }
+            else if (username.equals(game.blackUsername())) {
+                Game updatedGame = new Game (gameID, game.whiteUsername(), null, game.gameName(), game.game());
+                gameDAO.updateGame(updatedGame);
+            }
+
+            String message = username + " left the game.";
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connectionManager.broadcast(gameID, username, notificationMessage);
+
+        } catch (DataAccessException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resign(String token, Integer gameID, Session session) {
+        try {
+            AuthToken authToken = authDAO.getAuth(token);
+            Game game = gameDAO.getGame(gameID);
+            String username = authToken.username();
+            ChessGame chessGame = game.game();
+            ChessGame.TeamColor turnColor = chessGame.getTeamTurn();
+            if (!(username.equals(game.whiteUsername()) || username.equals(game.blackUsername()))) {
+                throw new DataAccessException("Error: Observing.");
+            }
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                    chessGame.isInStalemate(turnColor) ||
+                    chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                throw new DataAccessException("Error: Game is over.");
+            }
+            String message = username + "resigned. Game over.";
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connectionManager.broadcast(gameID, null, notificationMessage);
+        } catch (DataAccessException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
