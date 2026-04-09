@@ -190,11 +190,6 @@ public class Repl implements ServerMessageObserver {
                     JoinResult result = server.join(request);
                 }
                 webSocketFacade.connect(authToken, gameID);
-                ChessBoard board = new ChessBoard();
-                board.resetBoard();
-                System.out.println(); // Add some breathing room
-                DrawBoard.drawBoard(System.out, board, boardColor);
-                System.out.println();
                 return "Successfully Joined Game" + "\n";
             } catch (Exception e) {
                 return "Player slot is not open.";
@@ -233,7 +228,9 @@ public class Repl implements ServerMessageObserver {
                 LoadGameMessage loadGameMessage = (LoadGameMessage) message;
                 ChessGame game = loadGameMessage.getGame();
                 ChessBoard board = game.getBoard();
+                System.out.println();
                 DrawBoard.drawBoard(System.out, board, boardColor);
+                System.out.println();
                 break;
             case NOTIFICATION:
                 NotificationMessage notificationMessage = (NotificationMessage) message;
