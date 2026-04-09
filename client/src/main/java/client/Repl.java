@@ -258,7 +258,7 @@ public class Repl implements ServerMessageObserver {
     public ChessPosition findPosition(String position) {
         String letter = String.valueOf(position.charAt(0));
         int col = 0;
-        int row = position.charAt(1);
+        int row = Character.getNumericValue(position.charAt(1));
         if (letter.equalsIgnoreCase("a")) { col = 1;}
         else if (letter.equalsIgnoreCase("b")) { col = 2;}
         else if (letter.equalsIgnoreCase("c")) { col = 3;}
