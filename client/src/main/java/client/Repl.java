@@ -37,9 +37,10 @@ public class Repl implements ServerMessageObserver {
     private void printState() {
         if (state == State.SIGNEDOUT) {
             System.out.print("\n[LOGGED_OUT] >>> ");
-        }
-        else {
+        } else if (state == State.SIGNEDIN) {
             System.out.print("\n[LOGGED_IN] >>> ");
+        } else if (state == State.INGAME) {
+            System.out.print("\n[IN_GAME] >>> ");
         }
     }
 
@@ -105,7 +106,6 @@ public class Repl implements ServerMessageObserver {
             stringBuilder.append("Highlight legal moves: \"hl\", \"highlight\" <position> (e.g. f5)\n");
             stringBuilder.append("Make a move: \"m\", \"move\", \"make\" <source> <destination> <optional promotion> (e.g. f5 e4 q)\n");
             stringBuilder.append("Redraw Chess Board: \"r\", \"redraw\"\n");
-            stringBuilder.append("Change color scheme: \"c\", \"colors\" <color number>\n");
             stringBuilder.append("Resign from game: \"res\", \"resign\"\n");
             stringBuilder.append("Leave game: \"leave\"\n");
         }
@@ -280,8 +280,15 @@ public class Repl implements ServerMessageObserver {
     }
 
     public String resign() throws ResponseException {
-        webSocketFacade.resign(this.authToken, this.gameID);
-        return "";
+        System.out.print("Are you sure you want to resign? <y/n> ");
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine().toLowerCase();
+        if (line.equals("y") || line.equals("yes")) {
+            webSocketFacade.resign(this.authToken, this.gameID);
+            return "Resigned.\n";
+        } else {
+            return "Cancelled.\n";
+        }
     }
 
     public String highlight(String[] params) {
@@ -298,9 +305,18 @@ public class Repl implements ServerMessageObserver {
     }
 
     public ChessPosition findPosition(String position) {
+        if (position == null || position.length() < 2) {
+            throw new RuntimeException("Error: Invalid position");
+        }
+
         String letter = String.valueOf(position.charAt(0));
         int col = 0;
-        int row = Character.getNumericValue(position.charAt(1));
+        int row;
+        try {
+            row = Character.getNumericValue(position.charAt(1));
+        } catch (Exception e) {
+            throw new RuntimeException("Error: Please enter <letter/row> (e.g. e5)");
+        }
         if (letter.equalsIgnoreCase("a")) { col = 1;}
         else if (letter.equalsIgnoreCase("b")) { col = 2;}
         else if (letter.equalsIgnoreCase("c")) { col = 3;}
@@ -309,6 +325,9 @@ public class Repl implements ServerMessageObserver {
         else if (letter.equalsIgnoreCase("f")) { col = 6;}
         else if (letter.equalsIgnoreCase("g")) { col = 7;}
         else if (letter.equalsIgnoreCase("h")) { col = 8;}
+        if (col == 0 || row < 1 || row > 8) {
+            throw new RuntimeException("Error: Invalid coordinates (must be a-h and 1-8)");
+        }
         ChessPosition chessPosition = new ChessPosition(row, col);
         return chessPosition;
     }

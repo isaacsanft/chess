@@ -81,7 +81,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String jsonMessage = new Gson().toJson(loadGameMessage);
             session.getRemote().sendString(jsonMessage);
 
-            String message = username + "  joined the game";
+            String message;
+            if (username.equals(game.whiteUsername())) {
+                message = username + " joined the game as White";
+            } else if (username.equals(game.blackUsername())) {
+                message = username + " joined the game as Black";
+            } else {
+                message = username + " joined the game as an observer";
+            }
             NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.broadcast(gameID, username, notificationMessage);
 
@@ -137,29 +144,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             chessGame.makeMove(move);
             boolean over = false;
-            if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            String endMessage = null;
+            ChessGame.TeamColor opponentColor = null;
+            if (userColor == ChessGame.TeamColor.WHITE) {
+                opponentColor = ChessGame.TeamColor.BLACK;
+            } else if (userColor == ChessGame.TeamColor.BLACK) {
+                opponentColor = ChessGame.TeamColor.WHITE;
+            }
+            if (chessGame.isInCheckmate(opponentColor)) {
                 over = true;
-                connectionManager.broadcast(gameID, null, new NotificationMessage("Checkmate. Game over."));
-            } else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
-                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                endMessage = opponentColor + " is in checkmate. Game over.";
+            } else if (chessGame.isInStalemate(opponentColor)) {
                 over = true;
-                connectionManager.broadcast(gameID, null, new NotificationMessage("Stalemate. Game over."));
+                endMessage = "Stalemate. Game over.";
+            } else if (chessGame.isInCheck(opponentColor)) {
+                endMessage = opponentColor + " is in check.";
             }
             if (over) {
                 chessGame.setGameOver(true);
-                gameDAO.updateGame(game);
             }
 
             gameDAO.updateGame(game);
 
             LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
-            String jsonMessage = new Gson().toJson(loadGameMessage);
             connectionManager.broadcast(gameID, null, loadGameMessage);
 
             String message = positionString(move, username);
             NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.broadcast(gameID, username, notificationMessage);
+
+            if (endMessage != null) {
+                connectionManager.broadcast(gameID, null, new NotificationMessage(endMessage));
+            }
 
         } catch (DataAccessException | InvalidMoveException e) {
             try {
@@ -211,7 +227,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             chessGame.setGameOver(true);
             gameDAO.updateGame(game);
-            String message = username + "resigned. Game over.";
+            String message = username + " resigned. Game over.";
             NotificationMessage notificationMessage = new NotificationMessage(message);
             connectionManager.broadcast(gameID, null, notificationMessage);
         } catch (DataAccessException | IOException e) {
@@ -231,7 +247,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         int c1 = start.getColumn();
         int r2 = end.getRow();
         int c2 = end.getColumn();
-        return username + " moved from [" + r1 + ", " + c1 +"] to [" + r2 + ", " + c2 + "]";
+        String message =  username + " moved from [" + r1 + ", " + c1 +"] to [" + r2 + ", " + c2 + "]";
+        if (move.getPromotionPiece() != null) {
+            message += " and promoted to " + move.getPromotionPiece().toString();
+        }
+        return message;
     }
 
     private void sendErrorMessage(Session session, String message) {
