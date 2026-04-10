@@ -71,6 +71,9 @@ public class DrawBoard {
 
     private static String setHighlightColor(ChessPosition position, Collection<ChessMove> validMoves) {
         for (ChessMove move : validMoves) {
+            if (move.getStartPosition().equals(position)) {
+                return SET_BG_COLOR_YELLOW;
+            }
             if (move.getEndPosition().getRow() == position.getRow()
                     && move.getEndPosition().getColumn() == position.getColumn()) {
                 if ((position.getRow() + position.getColumn()) % 2 == 0) {
@@ -90,7 +93,7 @@ public class DrawBoard {
         printBorderSquare(out, diplayRow);
         for (int i = 0; i < 8 ; i++) {
             int displayColumn = getDisplayColumn(i, color);
-            String bgColor = null;
+            String bgColor;
             if ((row + i) % 2 == 0) {
                 bgColor = SET_BG_COLOR_WHITE;
             }
@@ -99,7 +102,10 @@ public class DrawBoard {
             }
             ChessPosition position = new ChessPosition(diplayRow, displayColumn);
             if (validMoves != null) {
-                bgColor = setHighlightColor(position, validMoves);
+                String highlightColor = setHighlightColor(position, validMoves);
+                if (!highlightColor.isEmpty()) {
+                    bgColor = highlightColor;
+                }
             }
             ChessPiece piece = board.getPiece(position);
             printSquare(out, piece, bgColor);

@@ -75,6 +75,8 @@ public class Repl implements ServerMessageObserver {
                 case "m", "move", "make" -> move(params);
                 case "leave" -> leave();
                 case "res", "resign" -> resign();
+                case "r", "redraw" -> redraw();
+                case "hl", "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -279,6 +281,16 @@ public class Repl implements ServerMessageObserver {
 
     public String resign() throws ResponseException {
         webSocketFacade.resign(this.authToken, this.gameID);
+        return "";
+    }
+
+    public String highlight(String[] params) {
+        if (params.length != 1) {
+            return "Error: Follow format <position> (e.g. hl e5)";
+        }
+        ChessPosition position = findPosition(params[0]);
+        Collection<ChessMove> validMoves = chessGame.validMoves(position);
+        DrawBoard.drawHighlightedBoard(System.out, chessGame.getBoard(), boardColor, validMoves);
         return "";
     }
 
