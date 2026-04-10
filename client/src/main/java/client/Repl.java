@@ -6,10 +6,10 @@ import client.websocket.WebSocketFacade;
 import model.Game;
 import request.*;
 import result.*;
-import server.websocket.messages.ErrorMessage;
-import server.websocket.messages.NotificationMessage;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-import server.websocket.messages.LoadGameMessage;
 
 import java.util.*;
 
