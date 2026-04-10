@@ -136,6 +136,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new DataAccessException("Error: That's not a valid move.");
             }
             chessGame.makeMove(move);
+            boolean over = false;
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                over = true;
+                connectionManager.broadcast(gameID, null, new NotificationMessage("Checkmate. Game over."));
+            } else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
+                    chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                over = true;
+                connectionManager.broadcast(gameID, null, new NotificationMessage("Stalemate. Game over."));
+            }
+            if (over) {
+                chessGame.setGameOver(true);
+                gameDAO.updateGame(game);
+            }
+
             gameDAO.updateGame(game);
 
             LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());

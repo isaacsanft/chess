@@ -290,6 +290,9 @@ public class Repl implements ServerMessageObserver {
         }
         ChessPosition position = findPosition(params[0]);
         Collection<ChessMove> validMoves = chessGame.validMoves(position);
+        if (validMoves == null || validMoves.isEmpty()) {
+            return "No valid moves.";
+        }
         DrawBoard.drawHighlightedBoard(System.out, chessGame.getBoard(), boardColor, validMoves);
         return "";
     }

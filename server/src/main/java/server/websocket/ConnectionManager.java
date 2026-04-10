@@ -38,7 +38,8 @@ public class ConnectionManager {
     public void broadcast(Integer gameID, String excludeUserName, ServerMessage message) throws IOException {
         ArrayList<Connection> connections = games.get(gameID);
         for (Connection connection : connections) {
-            if (connection.session.isOpen() && !connection.username.equals(excludeUserName)) {
+            if (connection.session.isOpen() &&
+                    (excludeUserName == null || !connection.username.equals(excludeUserName))) {
                 String jsonMessage = new Gson().toJson(message);
                 connection.send(jsonMessage);
             }
