@@ -1,7 +1,6 @@
-package server.websocket.messages;
+package websocket.messages;
 
 import chess.ChessGame;
-import websocket.messages.ServerMessage;
 
 public class LoadGameMessage extends ServerMessage {
     public final ChessGame game;

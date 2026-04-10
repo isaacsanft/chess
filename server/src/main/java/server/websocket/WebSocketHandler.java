@@ -11,11 +11,11 @@ import model.AuthToken;
 import model.Game;
 import model.User;
 import org.eclipse.jetty.websocket.api.Session;
-import server.websocket.messages.ErrorMessage;
-import server.websocket.messages.LoadGameMessage;
-import server.websocket.messages.NotificationMessage;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
 import java.util.Collection;
