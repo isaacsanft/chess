@@ -27,14 +27,7 @@ public class LogoutHandler {
             context.result("{}");
         }
         catch (DataAccessException exception) {
-            if (exception.getMessage().contains("unauthorized")) {
-                context.status(401);
-            }
-            else {
-                context.status(500);
-            }
-            ErrorResult errorResult = new ErrorResult("Error: " + exception.getMessage());
-            context.result(JsonSerializer.toJson(errorResult));
+            ErrorHandler.handleException(exception, context);
         }
     }
 }
